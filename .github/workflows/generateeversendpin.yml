@@ -1,0 +1,46 @@
+name: Eversend Pin Generation and Balance Check
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install System Packages
+        run: |
+          sudo apt update
+          sudo apt install -y curl jq # Example system packages you might need
+          
+      - name: Generate Eversend PIN
+        id: generate_pin
+        run: |
+          PIN=$(openssl rand -base64 4 | tr -dc '0-9' | head -c 4) # Generate a 4 digit PIN
+          echo "Generated Eversend PIN: $PIN"
+          echo "::set-output name=pin::$PIN"
+          
+      - name: Check Balance
+        run: |
+          BALANCE=0.50 # Example balance; replace with real balance retrieval logic if available
+          echo "Your current balance is: $BALANCE"
+          
+      - name: Post Checkout Repository Complete
+        run: |
+          echo "Post checkout repository complete. Eversend PIN has been successfully generated."
+          
+      - name: Output PIN and Balance
+        run: |
+          echo "Generated Eversend PIN: ${{ steps.generate_pin.outputs.pin }}"
+          echo "Your current balance is: $BALANCE"
+
+      - name: Description Enter Your Balance
+        run: |
+          echo "Enter your balance: $0.50"
+          
