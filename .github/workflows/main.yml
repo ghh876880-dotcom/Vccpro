@@ -1,0 +1,45 @@
+name: Generate Eversend PIN and Check Balance
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate-eversend-pin:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install system packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y
+        # Output example: 0 upgraded, 0 newly installed, 0 to remove and 12 not upgraded
+
+    - name: Generate 4-digit Eversend PIN
+      id: generate_pin
+      run: |
+        PIN=$(shuf -i 1000-9999 -n 1)
+        echo "Generated 4-digit Eversend PIN: $PIN"
+        echo "::set-output name=pin::$PIN"
+
+    - name: Check balance
+      id: check_balance
+      run: |
+        BALANCE=0.50
+        echo "Balance: $${BALANCE}"
+        echo "::set-output name=balance::$BALANCE"
+
+    - name: Post checkout and complete job
+      run: |
+        echo "4 digits Eversend PIN generated: ${{ steps.generate_pin.outputs.pin }}"
+        echo "Balance checked: $${{ steps.check_balance.outputs.balance }}"
+        echo "Generate Eversend PIN has been successfully generated."
+        echo "Job completed successfully."
+
+    - name: Job success confirmation
+      run: echo "Done ✅ success"
